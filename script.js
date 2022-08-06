@@ -12,6 +12,7 @@ function clickCoffee(data) {
     data.coffee ++
     updateCoffeeView(data.coffee)
     renderProducers(data)
+    renderUpgrades(data)
 }
 
 /**************
@@ -126,6 +127,7 @@ function attemptToBuyProducer(data, producerId) {
 }
 
 function buyButtonClick(event, data) {
+  console.log(event.target.id)
   if(event.target.id){
   let producerId = event.target.id.slice(4)
   if(canAffordProducer(data,producerId)){
@@ -141,10 +143,110 @@ function buyButtonClick(event, data) {
 }
 
 function tick(data) {
+  
   data.coffee+=data.totalCPS
   updateCoffeeView(data.coffee)
   renderProducers(data)
+  renderUpgrades(data)
 }
+
+//slice 4 my attempt to add in a feature that would allow the purchase of upgrades
+
+
+function unlockUpgrades(upgrades, coffeeCount) {
+  upgrades.forEach(elem =>{
+  if(coffeeCount>=elem.price/2) elem.unlocked=true
+  })
+}
+
+function getUnlockedUpgrades(data) {
+  let unlockedUpgrades =[]
+  data.upgrades.forEach(elem =>{
+  if(elem.unlocked) unlockedUpgrades.push(elem)})
+  return unlockedUpgrades
+}
+
+function makeUpgradeDiv(upgrades) {
+  const containerDiv = document.createElement('div');
+  containerDiv.className = 'upgrades';
+  const displayName = makeDisplayNameFromId(upgrades.id);
+  const currentCost = upgrades.price;
+  const html = `
+  <div class="upgrades-column">
+    <div class="upgrades-title">${displayName}</div>
+    <button type="button" id="buy_${upgrades.id}">Buy</button>
+  </div>
+  <div class="upgrades-column">
+    <div>Global Multiplier: ${upgrades.mult}</div>
+    <div>Cost: ${currentCost} coffee</div>
+  </div>
+  `;
+  containerDiv.innerHTML = html;
+  return containerDiv;
+}
+
+function renderUpgrades(data) {
+  unlockUpgrades(data.upgrades, data.coffee)
+  deleteAllChildNodes(document.getElementById('upgrades_container'))
+  data.upgrades.forEach(elem =>{
+    if(elem.unlocked===true && elem.bought===false)
+      document.getElementById('upgrades_container').innerHTML+=makeUpgradeDiv(elem).outerHTML
+  })
+}
+
+function getUpgradesById(data, upgradesId) {
+  
+  for(let i = 0; i<data.producers.length; i++){
+    if(data.upgrades[i].id===upgradesId){
+      return data.upgrades[i]
+    }
+  }
+}
+
+function canAffordUpgrades(data, upgradesId) {
+  if(getUpgradesById(data, upgradesId).price<=data.coffee){
+    return true
+  }
+  else{
+    return false
+  }
+}
+
+
+function attemptToBuyUpgrades(data, upgradesId) {
+  if(canAffordUpgrades(data,upgradesId)){
+    data.coffee -= getUpgradesById(data, upgradesId).price;
+    getUpgradesById(data, upgradesId).bought=true;
+    data.totalCPS = data.totalCPS*getUpgradesById(data, upgradesId).mult
+    data.producers.forEach(elem =>elem.cps=elem.cps*getUpgradesById(data,upgradesId).mult)
+
+    return true
+  }else{
+    return false
+  }
+}
+
+function buyButtonClickUpgrades(event, data) {
+  console.log(event.target.id)
+  if(event.target.id){
+  let upgradesId = event.target.id.slice(4)
+  if(canAffordUpgrades(data,upgradesId)){
+  attemptToBuyUpgrades(data,upgradesId)
+  renderUpgrades(data)
+  updateCoffeeView(data.coffee)
+  updateCPSView(data.totalCPS)
+  }
+  else{
+    window.alert('Not enought coffee!')
+  }
+  }
+}
+
+const upgradesContainer = document.getElementById('upgrades_container');
+  upgradesContainer.addEventListener('click', event => {
+    buyButtonClickUpgrades(event, data);
+  });
+
 
 /*************************
  *  Start your engines!
@@ -199,6 +301,7 @@ else if (process) {
     updatePrice,
     attemptToBuyProducer,
     buyButtonClick,
-    tick
+    tick,
+    renderUpgrades,
   };
 }

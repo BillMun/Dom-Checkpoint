@@ -53,6 +53,23 @@ body {
   font-size: 20px;
 }
 
+#upgrades_container {
+  padding: 10px;
+  overflow: auto;
+  border: 2px black solid;
+  border-radius: 5px;
+}
+
+.upgrades {
+    margin-bottom: 5px;
+  padding: 10px;
+  border: 2px solid grey;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
 #producer_container {
   padding: 10px;
   overflow: auto;

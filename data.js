@@ -86,5 +86,20 @@ window.data = {
       cps: 2000,
       qty: 0
     }
-  ]
+  ],
+  upgrades:[ {
+    id: 'coffee_grinder',
+    price: 10,
+    unlocked: false,
+    mult: 2,
+    bought: false
+  },
+  {
+    id: 'better_beans',
+    price:20,
+    unlocked:false,
+    mult:3,
+    bought: false
+  },
+    ]
 };
