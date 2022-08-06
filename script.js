@@ -19,18 +19,16 @@ function clickCoffee(data) {
  **************/
 
 function unlockProducers(producers, coffeeCount) {
-  for(let i=0; i<producers.length; i++){
-  if(coffeeCount>=producers[i].price/2){
-    producers[i].unlocked=true}
-  }
+  producers.forEach(elem =>{
+  if(coffeeCount>=elem.price/2) elem.unlocked=true
+  })
 }
 
 function getUnlockedProducers(data) {
   let unlockedProducers =[]
-  for(let i=0; i<data.producers.length; i++){
-  if(data.producers[i].unlocked){
-    unlockedProducers.push(data.producers[i])}
-  }
+  data.producers.forEach(elem =>{
+  if(elem.unlocked) unlockedProducers.push(elem)})
+  
   return unlockedProducers
 }
 
@@ -78,11 +76,11 @@ function deleteAllChildNodes(parent) {
 function renderProducers(data) {
   unlockProducers(data.producers, data.coffee)
   deleteAllChildNodes(document.getElementById('producer_container'))
-  for(let i =0; i<data.producers.length; i++){
-    if(data.producers[i].unlocked===true){
-      document.getElementById('producer_container').innerHTML+=makeProducerDiv(data.producers[i]).outerHTML
-  }
-  }
+  data.producers.forEach(elem =>{
+    if(elem.unlocked===true)
+      document.getElementById('producer_container').innerHTML+=makeProducerDiv(elem).outerHTML
+  
+  })
 }
 
 /**************
